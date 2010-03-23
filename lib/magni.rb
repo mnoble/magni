@@ -1,17 +1,17 @@
 libdir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
-class InvalidArgumentError < Exception; end
+class AttributeError < Exception; end
 
 class Magni
   class << self
     attr_accessor :mappings
     # Maps a flag to a argument type
     #
-    #   map "--maxerrors" => :integer
+    #    map "--maxerrors" => :integer
     #
-    # Will later parse <tt>@options[:maxerrors]</tt> into the
-    # integer value the user supplied via <tt>--maxerrors=8</tt>
+    # Will later parse +@options[:maxerrors]+ into the
+    # integer value the user supplied via +--maxerrors=8+
     #
     # Parameters
     #
@@ -25,18 +25,31 @@ class Magni
         @mappings[flag.gsub(/[-]+/, "")] = type
       end
     end
+    
+    # Delegates from the command line, when invoked, to the class
+    # specified. This should go in your application's +bin+ script.
+    #
+    #    #!/usr/bin/env ruby
+    #    require 'my_app'
+    #    Magni.delegate(MyApp::Runner)
+    #
+    def delegate(klass)
+      klass.new.invoke(ARGV)
+    end
   end
   
   attr_accessor :options
   
-  def initialize(options=[])
+  def invoke(options=[])
     self.class.mappings ||= {}
     @options ||= {}
     
     options.each do |opt|
+      next unless opt =~ /^--/
       flag, *values = opt.gsub(/[-]+/, "").split(/[=,]/)
       process(flag, values)
     end
+    self
   end
   
   # Pulls the type of argument +flag+ is set to in +mappings+
@@ -53,18 +66,22 @@ class Magni
 private
   
   def to_boolean(values=[])
+    raise AttributeError unless values.empty?
     true
   end
   
   def to_integer(values=[])
+    raise AttributeError unless values[0] =~ /\d/
     values.pop.to_i
   end
   
   def to_array(values=[])
+    raise AttributeError if values.empty? || values.size <= 1
     values.map { |value| (value.to_i if value =~ /\d/) || value }
   end
   
   def to_string(values=[])
+    raise AttributeError if values.size > 1
     values.pop.to_s
   end
   
