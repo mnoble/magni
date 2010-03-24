@@ -1,52 +1,59 @@
-= magni
+= Magni
 
-* http://github.com/mnoble/magni
+Magni is a command line flag parser, nothing more, nothing less. It's
+useful for when you want to collect a bunch of flags from your script,
+then do something with them all.
 
-== DESCRIPTION:
+== Argument Types:
 
-  Magni is a simple, lightweight command line flag parser. It parses
-  flags (--these, --are, --flags) into four types:
+Magni accepts four types of arguments, <tt>boolean</tt>, <tt>string</tt>,
+<tt>array</tt> and <tt>integer</tt>.
   
-      boolean:
-        --foo #=> true
-      integer:
-        --foo=4 #=> 4
-      string:
-        --foo=theory #=> "theory"
-      array:
-        --foo=1,2,3 #=> [1, 2, 3]
+  boolean:   --foo          #=> true
+  integer:   --foo=4        #=> 4
+   string:   --foo=theory   #=> "theory"
+    array:   --foo=1,2,3    #=> [1, 2, 3]
 
-== Usage:
+== Mappings
+
+Magni is the son of Thor[http://github.com/wycats/thor] and so he inherited 
+some of his father's traits; mapping being one of them.
   
   class Runner < Magni
-    map "--install" => :boolean
-    map "--list"    => :string
+    map "--maxerr" => :integer
+    map "--help"   => :boolean
   end
+
+== In Your BIN Script
   
-  runner = Runner.new(ARGV) # ARGV = ["--list=all"]
-  runner.options[:list] #=> "all"
-
+  Magni.delegate_to(Runner)
+  
+== Using The Arguments
+  
+The last stop on the Magni train is your class' <tt>initialize</tt>
+method.
+  
 == License
-
-(The MIT License)
-
-Copyright (c) 2010 FIXME full name
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  
+  (The MIT License)
+  
+  Copyright (c) 2010 FIXME full name
+  
+  Permission is hereby granted, free of charge, to any person obtaining
+  a copy of this software and associated documentation files (the
+  'Software'), to deal in the Software without restriction, including
+  without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to
+  the following conditions:
+  
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -15,9 +15,7 @@ class Magni
     #
     # Parameters
     #
-    #    Hash[String] => Symbol::
-    #       String => name of the CLI flag, ie: "--maxerrors"
-    #       Symbol => argument type (:boolean, :integer, :string, :array)
+    #    mappings: Hash where key is flag and value is the type
     #
     def map(mapping={})
       @mappings ||= {}
@@ -25,33 +23,44 @@ class Magni
         @mappings[flag.gsub(/[-]+/, "")] = type
       end
     end
-    
-    # Delegates from the command line, when invoked, to the class
-    # specified. This should go in your application's +bin+ script.
+
+    # Tells Magni where to send the processed flags and arguments.
     #
-    #    #!/usr/bin/env ruby
-    #    require 'my_app'
-    #    Magni.delegate(MyApp::Runner)
+    #    # runner.rb
+    #    class Runner < Magni
+    #      map "--help" => :boolean
     #
-    def delegate(klass)
-      klass.new.invoke(ARGV)
+    #      def start
+    #        show_usage if @options[:help]
+    #      end
+    #    end
+    #
+    #    # bin_script.rb
+    #    Magni.delegate_to(Runner, :start)
+    #
+    # Parameters
+    #
+    #    klass:  Your "runner" class object
+    #    method: The method you want executed after flags are processed
+    #
+    def delegate_to(klass, method)
+      klass.new(ARGV).send(method)
     end
   end
-  
+
   attr_accessor :options
-  
-  def invoke(options=[])
+
+  def initialize(options=[])
     self.class.mappings ||= {}
-    @options ||= {}
-    
+    @options            ||= {}
+
     options.each do |opt|
       next unless opt =~ /^--/
       flag, *values = opt.gsub(/[-]+/, "").split(/[=,]/)
       process(flag, values)
     end
-    self
   end
-  
+
   # Pulls the type of argument +flag+ is set to in +mappings+
   # then sets the +options+ key to value "coerced" to the
   # matching argument type.
@@ -62,27 +71,31 @@ class Magni
       @options[flag.to_sym] = send("to_#{ type }", values)
     end
   end
-  
-private
-  
+
+  private
+
   def to_boolean(values=[])
-    raise AttributeError unless values.empty?
+    raise AttributeError, "Expected boolean argument." unless values.empty?
     true
   end
-  
+
   def to_integer(values=[])
-    raise AttributeError unless values[0] =~ /\d/
+    unless values[0] =~ /\d/
+      raise AttributeError, "Expected integer argument."
+    end
     values.pop.to_i
   end
-  
+
   def to_array(values=[])
-    raise AttributeError if values.empty? || values.size <= 1
+    if values.empty? || values.size <= 1
+      raise AttributeError, "Expected integer argument."
+    end
     values.map { |value| (value.to_i if value =~ /\d/) || value }
   end
-  
+
   def to_string(values=[])
-    raise AttributeError if values.size > 1
+    raise AttributeError, "Expected string argument." if values.size > 1
     values.pop.to_s
   end
-  
+
 end

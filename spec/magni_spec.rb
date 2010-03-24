@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper'
 describe Magni do
   
   before :each do
-    @test = Test.new.invoke
+    @test = Test.new
   end
   
   describe "mappings" do
@@ -31,7 +31,7 @@ describe Magni do
     end
     
     it "should raise an error when passed a value" do
-      lambda { Test.new.invoke(["--boolean=wrong"]) }.should raise_error
+      lambda { Test.new(["--boolean=wrong"]) }.should raise_error
     end
   end
   
@@ -42,7 +42,7 @@ describe Magni do
     end
     
     it "should raise an error when passed a string" do
-      lambda { Test.new.invoke(["--integer=abc"]) }.should raise_error
+      lambda { Test.new(["--integer=abc"]) }.should raise_error
     end
   end
   
@@ -53,7 +53,7 @@ describe Magni do
     end
     
     it "should raise an error when passed an array" do
-      lambda { Test.new.invoke(["--string=a,b,c"]) }.should raise_error
+      lambda { Test.new(["--string=a,b,c"]) }.should raise_error
     end
   end
   
@@ -64,23 +64,23 @@ describe Magni do
     end
     
     it "should raise an error when no values are received" do
-      lambda { Test.new.invoke(["--array"]) }.should raise_error
+      lambda { Test.new(["--array"]) }.should raise_error
     end
   end
   
   it "should accept multiple arguments" do
-    test = Test.new.invoke(["--integer=9", "--string=wing", "--array=1,2,3,4"])
+    test = Test.new(["--integer=9", "--string=wing", "--array=1,2,3,4"])
     test.options[:integer].should == 9
     test.options[:string].should == "wing"
     test.options[:array].should == [1, 2, 3, 4]
   end
   
   it "should silently ignore non-flag command line arguments" do
-    lambda { Test.new.invoke(["omgdontfail", "whatthe"]) }.should_not raise_error
+    lambda { Test.new(["omgdontfail", "whatthe"]) }.should_not raise_error
   end
   
   it "should not set non-flag arguments in options" do
-    test = Test.new.invoke(["omgdontfail"])
+    test = Test.new(["omgdontfail"])
     test.options.should be_empty
   end
   
@@ -90,7 +90,7 @@ describe Magni do
     Controller.stub!(:new).and_return(controller)
     
     controller.should_receive(:invoke)
-    Magni.delegate(Controller)
+    Magni.delegate_to(Controller, :invoke)
   end
   
 end
