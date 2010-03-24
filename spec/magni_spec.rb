@@ -68,6 +68,17 @@ describe Magni do
     end
   end
   
+  describe "keywords" do
+    it "should map the last argument to an instance variable" do
+      LastKeywordTest.keywords[:last].should == :file
+    end
+    
+    it "should populate the instance variable with the :last flag value" do
+      test = LastKeywordTest.new(["example.js"])
+      test.file.should == "example.js"
+    end
+  end
+  
   it "should accept multiple arguments" do
     test = Test.new(["--integer=9", "--string=wing", "--array=1,2,3,4"])
     test.options[:integer].should == 9

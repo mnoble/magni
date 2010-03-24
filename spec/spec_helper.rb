@@ -6,3 +6,7 @@ class Test < Magni
   map "--integer" => :integer
   map "--string"  => :string
 end
+
+class LastKeywordTest < Magni
+  map :last => :file
+end
