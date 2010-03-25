@@ -58,7 +58,7 @@ class Magni
     #      map "--help" => :boolean
     #
     #      def start
-    #        show_usage if @options[:help]
+    #        ...
     #      end
     #    end
     #
@@ -67,7 +67,7 @@ class Magni
     #
     # Parameters
     #
-    #    klass:  Your "runner" class object
+    #    klass:  Your "runner" class
     #    method: The method you want executed after flags are processed
     #
     def delegate_to(klass, method)
@@ -77,7 +77,7 @@ class Magni
   private
     
     def is_map_keyword?(flag)
-      [:last, :first].include?(flag)
+      [:first, :last].include?(flag)
     end
   end
   

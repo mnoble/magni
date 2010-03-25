@@ -3,8 +3,8 @@
 Magni is a command line flag parser, nothing more, nothing less. It's
 useful for when you want to collect a bunch of flags from your script,
 then do something with them all.
-
-== Argument Types:
+== 
+=== ARGUMENT TYPES
 
 Magni accepts four types of arguments, <tt>boolean</tt>, <tt>string</tt>,
 <tt>array</tt> and <tt>integer</tt>.
@@ -14,24 +14,41 @@ Magni accepts four types of arguments, <tt>boolean</tt>, <tt>string</tt>,
    string:   --foo=theory   #=> "theory"
     array:   --foo=1,2,3    #=> [1, 2, 3]
 
-== Mappings
+=== MAPPINGS
 
 Magni is the son of Thor[http://github.com/wycats/thor] and so he inherited 
 some of his father's traits; mapping being one of them.
   
   class Runner < Magni
     map "--maxerr" => :integer
+    map "--name"   => :string
     map "--help"   => :boolean
   end
 
-== In Your BIN Script
+There are a couple special keywords that work with mappings too, <tt>:first</tt>
+and <tt>:last</tt>. Each one will place the first or last, respectively,
+argument in an instance variable for you. This is useful when the last
+argument of your script is a file or command for example.
+
+  map :last => :file
   
-  Magni.delegate_to(Runner)
+  > script --hello world.rb
+  @file #=> "world.rb"
+
+=== BIN SCRIPT
+
+Tell Magni where to go after it does it's flag parsing magic. 
+<tt>delegate_to</tt> takes two arguments. The first is your Magni subclass
+and the second is the method you want to be called when Magni is done:
+
+  Magni.delegate_to(Runner, :method)
   
-== Using The Arguments
+=== USING THE FLAGS
   
-The last stop on the Magni train is your class' <tt>initialize</tt>
-method.
+Flags and values are saved in <tt>@options</tt>. From the example above:
+
+  > script --maxerr=4 --name=Matte
+  @options #=> { :maxerr => 4, :name => "Matte" }
   
 == License
   
