@@ -71,7 +71,7 @@ class Magni
     #    method: The method you want executed after flags are processed
     #
     def delegate_to(klass, method)
-      klass.new(ARGV).send(method)
+      klass.new(ARGV.dup).send(method)
     end
     
   private
@@ -129,9 +129,7 @@ private
   end
 
   def to_array(values=[])
-    if values.empty? || values.size <= 1
-      raise MagniAttributeError, "Expected integer."
-    end
+    raise MagniAttributeError, "Expected array." if values.empty?
     values.map { |value| (value.to_i if value =~ /\d/) || value }
   end
 
